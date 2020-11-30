@@ -7,8 +7,11 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.w3c.dom.*
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 
+@ExperimentalTime
 suspend fun main() {
     console.log("Super Google loaded!")
     window.onkeyup = {
@@ -58,6 +61,7 @@ fun showAllHiddenReviews() {
         }
 }
 
+@ExperimentalTime
 suspend fun filterBy(keywords: List<String>, maxLimit: Int?) {
     // Showing progress
     showLoading("Loading all reviews ...")
@@ -71,12 +75,12 @@ suspend fun filterBy(keywords: List<String>, maxLimit: Int?) {
     while (totalReviews >= loadedReviewCount) {
 
         // Scroll to bottom
-        dReviewDialogList.scrollTop = dReviewDialogList.scrollHeight.toDouble()
-        delay(500)
-        loadedReviewCount = getLoadedReviewCount()
+        val tookMs = measureTime {
+            dReviewDialogList.scrollTop = dReviewDialogList.scrollHeight.toDouble()
+            delay(500)
+            loadedReviewCount = getLoadedReviewCount()
 
-        val percentageLoaded = (loadedReviewCount / totalReviews.toFloat()) * 100
-        if (percentageLoaded <= 100) {
+            val percentageLoaded = (loadedReviewCount / totalReviews.toFloat()) * 100
             val secondaryPercentage = if (maxLimit != null) {
                 val secPerc = (loadedReviewCount / maxLimit.toFloat()) * 100
                 "(${secPerc.toInt()}%)"
@@ -85,6 +89,8 @@ suspend fun filterBy(keywords: List<String>, maxLimit: Int?) {
             }
             showLoading("${percentageLoaded.toInt()}% reviews analyzed ... $secondaryPercentage")
         }
+
+        console.log("Took ${tookMs.inMilliseconds}ms")
 
         if (maxLimit != null && loadedReviewCount >= maxLimit) {
             break
