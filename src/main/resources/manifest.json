@@ -1,0 +1,24 @@
+{
+  "name": "Super Google",
+  "version": "1.0.0",
+  "description": "Enhance your Google experience",
+  "manifest_version": 2,
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.com/*"
+      ],
+      "js": [
+        "super-google.js"
+      ],
+      "runat": "document_end"
+    }
+  ]
+}
