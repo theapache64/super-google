@@ -87,7 +87,7 @@ suspend fun filterBy(keywords: List<String>, maxLimit: Int?) {
             } else {
                 ""
             }
-            showLoading("${percentageLoaded.toInt()}% reviews analyzed ... $secondaryPercentage")
+            showLoading("${percentageLoaded.toInt()}% reviews loaded ... $secondaryPercentage")
         }
 
         console.log("Took ${tookMs.inMilliseconds}ms")
