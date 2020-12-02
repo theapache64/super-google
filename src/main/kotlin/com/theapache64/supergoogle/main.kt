@@ -24,17 +24,18 @@ suspend fun main() {
                         .split(",")
                         .map { keyword -> keyword.trim() }
 
-                    val count = window.prompt("How many reviews you want to analyse?").let { maxLimitString ->
-                        if (maxLimitString.isNullOrBlank()) {
-                            null
-                        } else {
-                            try {
-                                maxLimitString.trim().toInt()
-                            } catch (e: NumberFormatException) {
+                    val count = window.prompt("How many reviews you want to analyse? (empty to review all)")
+                        .let { maxLimitString ->
+                            if (maxLimitString.isNullOrBlank()) {
                                 null
+                            } else {
+                                try {
+                                    maxLimitString.trim().toInt()
+                                } catch (e: NumberFormatException) {
+                                    null
+                                }
                             }
                         }
-                    }
 
                     GlobalScope.launch {
                         filterBy(keywords, count)
@@ -56,9 +57,17 @@ fun showAllHiddenReviews() {
         .forEach {
             for (node in it.childNodes.asList()) {
                 node as HTMLDivElement
+                val currentReviewSpan = node.querySelector("span[jscontroller]") as HTMLSpanElement
                 node.style.display = "block"
+
+                // Reset color
+                currentReviewSpan.innerHTML = currentReviewSpan.innerText
             }
         }
+}
+
+val dReviewDialogList by lazy {
+    document.querySelector("#gsr div.review-dialog-list") as HTMLDivElement
 }
 
 @ExperimentalTime
@@ -71,8 +80,8 @@ suspend fun filterBy(keywords: List<String>, maxLimit: Int?) {
 
     var loadedReviewCount = getLoadedReviewCount()
 
-    val dReviewDialogList = document.querySelector("#gsr div.review-dialog-list") as HTMLDivElement
-    while (totalReviews >= loadedReviewCount) {
+
+    while (totalReviews > loadedReviewCount) {
 
         // Scroll to bottom
         val tookMs = measureTime {
@@ -90,7 +99,7 @@ suspend fun filterBy(keywords: List<String>, maxLimit: Int?) {
             showLoading("${percentageLoaded.toInt()}% reviews loaded ... $secondaryPercentage")
         }
 
-        console.log("Took ${tookMs.inMilliseconds}ms")
+        console.log("Took ${tookMs.inMilliseconds}ms -> $totalReviews >= $loadedReviewCount")
 
         if (maxLimit != null && loadedReviewCount >= maxLimit) {
             break
@@ -114,13 +123,32 @@ suspend fun onAllReviewsLoaded(keywords: List<String>) {
 
             for (node in it.childNodes.asList()) {
                 node as HTMLDivElement
-                val review = (node.querySelector("span[jscontroller]") as HTMLSpanElement)
-                    .innerText.trim()
+                val currentReviewSpan = node.querySelector("span[jscontroller]") as HTMLSpanElement
+                val currentReview = currentReviewSpan.innerText.trim()
 
-                if (review.isNotBlank()) {
-                    if (containsAny(review, keywords)) {
+                if (currentReview.isNotBlank()) {
+                    val matches = findFrom(currentReview, keywords)
+                    if (matches.isNotEmpty()) {
                         // show
                         node.style.display = "block"
+
+                        // Reset prev colors
+                        currentReviewSpan.innerHTML = currentReviewSpan.innerText
+
+                        // color the matched word
+                        for (word in matches) {
+                            val updatedReview = currentReview.replace(
+                                word, """
+                                <span style="color: #fff;
+                                            background-color: #383838;
+                                            font-weight: 700;">$word</span>
+                            """.trimIndent(),
+                                true
+                            )
+
+                            currentReviewSpan.innerHTML = updatedReview
+                        }
+
                         totalReviewsShown++
                     } else {
                         // hide
@@ -139,8 +167,10 @@ suspend fun onAllReviewsLoaded(keywords: List<String>) {
 
     if (totalReviewsShown > 0) {
         window.alert("Found $totalReviewsShown match(es) for $joinedKeywords")
+        dReviewDialogList.scrollTop = 0.toDouble()
     } else {
         window.alert("No match found for $joinedKeywords")
+        showAllHiddenReviews()
     }
 }
 
@@ -148,13 +178,14 @@ fun hideLoading() {
     getLoadingDiv()?.remove()
 }
 
-fun containsAny(review: String, keywords: List<String>): Boolean {
+fun findFrom(review: String, keywords: List<String>): List<String> {
+    val matches = mutableListOf<String>()
     for (keyword in keywords) {
         if (review.contains(keyword, true)) {
-            return true
+            matches.add(keyword)
         }
     }
-    return false
+    return matches
 }
 
 fun getLoadedReviewCount(): Int {
