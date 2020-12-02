@@ -18,7 +18,7 @@ Enhance your Google experience
 
 #### :baby_bottle: Search in Reviews
 
-- 🎥 [Watch Demo](demo.webm)
+- 🎥 [Watch Demo](https://raw.githubusercontent.com/theapache64/super-google/master/demo.mp4)
 
 ## :ballot_box_with_check: TODO
 
