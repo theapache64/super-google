@@ -11,6 +11,9 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
 
+const val STYLE_HIGHLIGHT = "color: #fff; background-color: #383838; font-weight: 700;"
+
+
 @ExperimentalTime
 suspend fun main() {
     console.log("Super Google loaded!")
@@ -57,11 +60,7 @@ fun showAllHiddenReviews() {
         .forEach {
             for (node in it.childNodes.asList()) {
                 node as HTMLDivElement
-                val currentReviewSpan = node.querySelector("span[jscontroller]") as HTMLSpanElement
                 node.style.display = "block"
-
-                // Reset color
-                currentReviewSpan.innerHTML = currentReviewSpan.innerText
             }
         }
 }
@@ -132,17 +131,11 @@ suspend fun onAllReviewsLoaded(keywords: List<String>) {
                         // show
                         node.style.display = "block"
 
-                        // Reset prev colors
-                        currentReviewSpan.innerHTML = currentReviewSpan.innerText
-
                         // color the matched word
                         for (word in matches) {
                             val updatedReview = currentReview.replace(
-                                word, """
-                                <span style="color: #fff;
-                                            background-color: #383838;
-                                            font-weight: 700;">$word</span>
-                            """.trimIndent(),
+                                word,
+                                "<span style=\"$STYLE_HIGHLIGHT\">$word</span>",
                                 true
                             )
 
