@@ -2,9 +2,8 @@
 
 Enhance your Google experience
 
-## Demo
 
-- 🎥 [Watch Demo](demo.webm)
+<!--
 
 ## Install
 
@@ -13,6 +12,7 @@ Enhance your Google experience
 - Step 1 : Download `super-google.zip` file from [releases](https://github.com/theapache64/super-google/releases/latest) and extract it. 
 - Step 2 : Open extensions tab (`chrome://extensions`) and turn on `Developer Mode`
 - Step 4 : Click `Load unpacked` and select the extracted folder :star:
+-->
 
 ## :paintbrush: Features
 
@@ -20,6 +20,7 @@ Enhance your Google experience
 
 - TODO
 
+- 🎥 [Watch Demo](demo.webm)
 
 ## :ballot_box_with_check: TODO
 
