@@ -18,8 +18,6 @@ Enhance your Google experience
 
 #### :baby_bottle: Search in Reviews
 
-- TODO
-
 - 🎥 [Watch Demo](demo.webm)
 
 ## :ballot_box_with_check: TODO
