@@ -1,4 +1,4 @@
-# :rocket: super-github
+# :rocket: super-google
 
 Enhance your Google experience
 
